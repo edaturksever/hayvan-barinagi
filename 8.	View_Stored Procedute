@@ -1,0 +1,58 @@
+CREATE TABLE Ogrenciler (
+    OgrenciID INT PRIMARY KEY,
+    AdSoyad VARCHAR(100),
+    Bolum VARCHAR(50)
+);
+
+CREATE TABLE Notlar (
+    NotID INT PRIMARY KEY,
+    OgrenciID INT,
+    DersAdi VARCHAR(100),
+    Notu INT,
+    FOREIGN KEY (OgrenciID) REFERENCES Ogrenciler(OgrenciID)
+);
+
+INSERT INTO Ogrenciler (OgrenciID, AdSoyad, Bolum)
+VALUES 
+(1, 'Ahmet Yılmaz', 'Bilgisayar Mühendisliği'),
+(2, 'Elif Kaya', 'Elektrik-Elektronik Mühendisliği'),
+(3, 'Mehmet Demir', 'Makine Mühendisliği');
+
+INSERT INTO Notlar (NotID, OgrenciID, DersAdi, Notu)
+VALUES
+(1, 1, 'Veritabanı Sistemleri', 85),
+(2, 1, 'Algoritmalar', 90),
+(3, 2, 'Devre Teorisi', 75),
+(4, 3, 'Termodinamik', 65),
+(5, 2, 'Veritabanı Sistemleri', 80);
+
+CREATE VIEW vw_OgrenciNotlari AS
+SELECT 
+    o.AdSoyad,
+    o.Bolum,
+    n.DersAdi,
+    n.Notu
+FROM 
+    Ogrenciler o
+JOIN 
+    Notlar n ON o.OgrenciID = n.OgrenciID;
+
+SELECT * FROM vw_OgrenciNotlari;
+
+CREATE PROCEDURE sp_OgrenciNotlariGetir
+    @bolumAdi VARCHAR(50)
+AS
+BEGIN
+    SELECT 
+        o.AdSoyad,
+        n.DersAdi,
+        n.Notu
+    FROM 
+        Ogrenciler o
+    INNER JOIN 
+        Notlar n ON o.OgrenciID = n.OgrenciID
+    WHERE 
+        o.Bolum = @bolumAdi;
+END;
+
+EXEC sp_OgrenciNotlariGetir @bolumAdi = 'Bilgisayar Mühendisliği';
